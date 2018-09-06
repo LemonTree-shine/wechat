@@ -1,8 +1,15 @@
 var express = require("express");
-var jsSHA = require('jssha');
+var sha1 = require('sha1');
 
 
 const server = express();
+server.use(function(req,res,next){
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 server.use("/wechat",function(req,res){
     var token="weixin";
@@ -18,14 +25,16 @@ server.use("/wechat",function(req,res){
     oriArray.sort();
 
     var original = oriArray.join('');
-    var shaObj = new jsSHA(original, 'TEXT');
-    var scyptoString=shaObj.getHash('SHA-1', 'HEX'); 
+    var sha = sha1(original)
 
-    if(signature == scyptoString){
+    if(signature === sha){
         //验证成功
+        res.send("success")
     } else {
         //验证失败
+        res.send("error")
     }
+    
 });
 
 const app = server.listen("80",()=>{
