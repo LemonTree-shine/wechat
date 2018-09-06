@@ -28,4 +28,6 @@ server.use("/wechat",function(req,res){
     }
 });
 
-const app = server.listen("80");
+const app = server.listen("80",()=>{
+    console.log("启动了")
+});
