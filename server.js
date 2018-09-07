@@ -32,11 +32,13 @@ server.use("/wechat",function(req,res){
         res.send("success")
     } else {
         //验证失败
-        res.send("error")
+        res.send({"message":"error"})
     }
     
 });
 
-const app = server.listen("80",()=>{
+server.use(express.static(__dirname, ''));
+
+const app = server.listen("8080",()=>{
     console.log("启动了")
 });
