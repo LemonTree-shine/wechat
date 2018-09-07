@@ -29,7 +29,7 @@ server.use("/wechat",function(req,res){
 
     if(signature === sha){
         //验证成功
-        res.send("success")
+        res.send(echostr)
     } else {
         //验证失败
         res.send({"message":"error"})
