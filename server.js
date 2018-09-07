@@ -39,6 +39,6 @@ server.use("/wechat",function(req,res){
 
 server.use(express.static(__dirname, ''));
 
-const app = server.listen("8080",()=>{
+const app = server.listen("80",()=>{
     console.log("启动了")
 });
