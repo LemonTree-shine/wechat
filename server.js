@@ -11,7 +11,7 @@ server.use(function(req,res,next){
     next();
 });
 
-server.use("/wechat",function(req,res){
+server.use("/",function(req,res){
     var token="weixin";
     var signature = req.query.signature;
     var timestamp = req.query.timestamp;
