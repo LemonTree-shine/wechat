@@ -38,9 +38,11 @@ server.get("/",function(req,res){
     }
     
 });
+
 server.post("/",function(req,res){
     var appid = "wxdfe9f2cd9bd1e303";
     var secret = "88675af2b3bb833400d0c40645eb2d51";
+    console.log(123);
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`,function(error, response, body){
         global.wechat_access_token = JSON.parse(body).access_token;
         //res.send("获取成功");
