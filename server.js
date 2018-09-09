@@ -3,6 +3,8 @@ var sha1 = require('sha1');
 var request = require('request');
 var parseString = require('xml2js').parseString;
 
+var message = require('./util');
+
 
 const server = express();
 server.use(function(req,res,next){
@@ -71,7 +73,11 @@ server.post("/",function(req,res){
                             console.log(xml)
                             res.send(xml)
                         }else{
-                            var xml=returntext(fromUser,toUser,'您好');
+                            if(message[result.Content]){
+                                var xml=returntext(fromUser,toUser,message[result.Content]);
+                            }else{
+                                var xml=returntext(fromUser,toUser,'您好');
+                            }
                             console.log(xml)
                             res.send(xml)
                         }
