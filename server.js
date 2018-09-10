@@ -91,6 +91,14 @@ server.post("/", function (req, res) {
                                     break;
                                 case "image":
                                     var xml = returntext(fromUser, toUser, '测试是图片类型');
+                                    request(`https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=${global.wechat_access_token}`,{
+                                        "type":"image",
+                                        "offset":0,
+                                        "count":1
+                                    },function (error, response, body){
+                                        console.log(body)
+                                    })
+                                    //returnimage()
                                     res.send(xml);
                                     break;
                                 case "voice":
@@ -148,16 +156,13 @@ function returntext(toUser, fromUser, content) {
     return xmlContent;
 }
 
-function returnlink(toUser, fromUser, title, des, link, id) {
+function returnimage(toUser, fromUser, mediaId) {
     var xmlContent = `<xml>
                         <ToUserName>< ![CDATA[${toUser}] ]></ToUserName>
                         <FromUserName>< ![CDATA[${fromUser}] ]></FromUserName>
                         <CreateTime>${new Date().getTime()}</CreateTime>
-                        <MsgType>< ![CDATA[link] ]></MsgType>
-                        <Title>< ![CDATA[${title}] ]></Title>
-                        <Description>< ![CDATA[${des}] ]></Description>
-                        <Url>< ![CDATA[${link}] ]></Url>
-                        <MsgId>${id}</MsgId>
+                        <MsgType>< ![CDATA[image] ]></MsgType>
+                        <Image><MediaId>< ![CDATA[${mediaId}] ]></MediaId></Image>
                     </xml>`
 
     return xmlContent;
