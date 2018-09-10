@@ -96,7 +96,8 @@ server.post("/", function (req, res) {
                                         "offset":0,
                                         "count":1
                                     },function (error, response, body){
-                                        console.log(body)
+                                        console.log(body);
+                                        console.log(global.wechat_access_token)
                                     })
                                     //returnimage()
                                     res.send(xml);
