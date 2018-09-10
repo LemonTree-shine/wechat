@@ -95,7 +95,7 @@ server.post("/", function (req, res) {
                                         request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}`,{
                                             formData: {
                                                 buffer: {
-                                                    value: fs.readFileSync(__dirname+"1.png"),
+                                                    value: fs.readFileSync(__dirname+"/1.png"),
                                                     options: {
                                                       filename: '1.png',
                                                       contentType: 'image/png'
