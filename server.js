@@ -103,17 +103,15 @@ server.post("/", function (req, res) {
                                                 }
                                             }
                                         },(err, httpResponse, body)=>{
+                                            console.log(body)
                                             resolve(body);
                                         });
                                     }).then(function(data){
-                                        request(`https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=${global.wechat_access_token}`,{
-                                            "type":"image",
-                                            "offset":0,
-                                            "count":1
+                                        request(`https://api.weixin.qq.com/cgi-bin/media/get?access_token=${global.wechat_access_token}`,{
+                                            media_id:data.media_id
                                         },function (error, response, body){
                                             console.log(11111111111111);
                                             console.log(body);
-                                            console.log(global.wechat_access_token)
                                         })
                                     });
                                     //returnimage()
