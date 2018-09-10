@@ -67,7 +67,6 @@ server.post("/",function(req,res){
                         result = result.xml;
                         var toUser = result.ToUserName; //接收方微信
                         var fromUser = result.FromUserName;//发送仿微信
-
                         //判断是否是事件类型
                         if(result.Event){
                             if(result.Event==='subscribe'){
@@ -97,11 +96,9 @@ server.post("/",function(req,res){
                                     var xml=returntext(fromUser,toUser,'回复的格式暂时不支持！');
                                     res.send(xml);  
                             }
-                            
-                            console.log(xml)
-                            res.send(xml)
                         }
-    
+                        
+                        console.log(xml);
                     }
                 })
             });
