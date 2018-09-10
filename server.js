@@ -90,7 +90,7 @@ server.post("/", function (req, res) {
                                     break;
                                 case "image":
                                     var xml = returntext(fromUser, toUser, '测试是图片类型');
-                                    request(`https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=${global.wechat_access_token}`,{
+                                    request(`https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=${global.wechat_access_token}`,{
                                         "type":"image",
                                         "offset":0,
                                         "count":1
