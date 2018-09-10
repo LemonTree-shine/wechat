@@ -90,7 +90,7 @@ server.post("/", function (req, res) {
                                     res.send(xml);
                                     break;
                                 case "image":
-                                    var xml = returntext(fromUser, toUser, '测试是图片类型');
+                                    
                                     new Promise(function (resolve, reject) {
                                         var formData = {
                                             media: fs.createReadStream(__dirname+'/1.png'),
@@ -102,13 +102,17 @@ server.post("/", function (req, res) {
                                             resolve(body);
                                         });
                                     }).then(function (data) {
-                                        request(`https://api.weixin.qq.com/cgi-bin/media/get?access_token=${global.wechat_access_token}&media_id=${JSON.parse(data).media_id}`, function (error, response, body) {
-                                            console.log(11111111111111);
-                                            console.log(JSON.parse(data).media_id);
-                                        })
+                                        // request(`https://api.weixin.qq.com/cgi-bin/media/get?access_token=${global.wechat_access_token}&media_id=${JSON.parse(data).media_id}`, function (error, response, body) {
+                                        //     console.log(11111111111111);
+                                        //     console.log(JSON.parse(data).media_id);
+                                        // })
+                                        var xml = returnimage(fromUser, toUser, JSON.parse(data).media_id);
+                                        console.log(11111111111111);
+                                        console.log(xml)
+                                        res.send(xml);
+                                        
                                     });
                                     //returnimage()
-                                    res.send(xml);
                                     break;
                                 case "voice":
                                     var xml = returntext(fromUser, toUser, '测试是语音类型类型');
