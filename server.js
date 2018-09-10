@@ -171,12 +171,12 @@ function returntext(toUser, fromUser, content) {
 
 function returnimage(toUser, fromUser, mediaId) {
     var xmlContent = `<xml>
-                        <ToUserName>< ![CDATA[${toUser}] ]></ToUserName>
-                        <FromUserName>< ![CDATA[${fromUser}] ]></FromUserName>
+                        <ToUserName><![CDATA[${toUser}]]></ToUserName>
+                        <FromUserName><![CDATA[${fromUser}]]></FromUserName>
                         <CreateTime>${new Date().getTime()}</CreateTime>
-                        <MsgType>< ![CDATA[image] ]></MsgType>
-                        <Image><MediaId>< ![CDATA[${mediaId}] ]></MediaId></Image>
-                    </xml>`
+                        <MsgType><![CDATA[image]]></MsgType>
+                        <Image><MediaId><![CDATA[${mediaId}]]></MediaId></Image>
+                    </xml>`;
 
     return xmlContent;
 }
