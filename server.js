@@ -67,17 +67,37 @@ server.post("/",function(req,res){
                         result = result.xml;
                         var toUser = result.ToUserName; //接收方微信
                         var fromUser = result.FromUserName;//发送仿微信
-                        if(result.Event==='subscribe'){
-                            //回复消息
-                            var xml=returntext(fromUser,toUser,'欢迎关注公众号,hahhh');
-                            console.log(xml)
-                            res.send(xml)
-                        }else{
-                            if(message[result.Content]){
-                                var xml=returntext(fromUser,toUser,message[result.Content]);
-                            }else{
-                                var xml=returntext(fromUser,toUser,'您好');
+
+                        //判断是否是事件类型
+                        if(result.Event){
+                            if(result.Event==='subscribe'){
+                                //回复消息
+                                var xml=returntext(fromUser,toUser,'欢迎关注公众号,hahhh');
+                                res.send(xml);
                             }
+                        }else{
+                            /**
+                             * text:消息回复
+                             * image:图片回复
+                            */
+                            switch(result.MsgType){
+                                case "text":
+                                    if(message[result.Content]){
+                                        var xml=returntext(fromUser,toUser,message[result.Content]);
+                                    }else{
+                                        var xml=returntext(fromUser,toUser,'后期会增加更多功能');
+                                    }
+                                    res.send(xml);  
+                                    break;
+                                case "image":
+                                    var xml=returntext(fromUser,toUser,'测试是图片类型');
+                                    res.send(xml);  
+                                    break;
+                                default:
+                                    var xml=returntext(fromUser,toUser,'回复的格式暂时不支持！');
+                                    res.send(xml);  
+                            }
+                            
                             console.log(xml)
                             res.send(xml)
                         }
