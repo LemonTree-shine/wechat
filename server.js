@@ -138,11 +138,12 @@ const app = server.listen("80", () => {
 
 //回复文字信息
 function returntext(toUser, fromUser, content) {
-    var xmlContent = "<xml><ToUserName><![CDATA[" + toUser + "]]></ToUserName>";
-    xmlContent += "<FromUserName><![CDATA[" + fromUser + "]]></FromUserName>";
-    xmlContent += "<CreateTime>" + new Date().getTime() + "</CreateTime>";
-    xmlContent += "<MsgType><![CDATA[text]]></MsgType>";
-    xmlContent += "<Content><![CDATA[" + content + "]]></Content></xml>";
+    var xmlContent = `<xml><ToUserName><![CDATA[${toUser}]]></ToUserName>
+                        <FromUserName><![CDATA[${fromUser}]]></FromUserName>
+                        <CreateTime>${new Date().getTime()}</CreateTime>
+                        <MsgType><![CDATA[text]]></MsgType>
+                        <Content><![CDATA[${content}]]></Content>
+                    </xml>`;
 
     return xmlContent;
 }
