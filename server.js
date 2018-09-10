@@ -84,8 +84,8 @@ server.post("/", function (req, res) {
                                     if (message[result.Content]) {
                                         var xml = returntext(fromUser, toUser, message[result.Content]);
                                     } else {
-                                        //var xml = returntext(fromUser, toUser, '后期会增加更多功能');
-                                        var xml = returnlink(fromUser,toUser,"测试aaa","描述AAA",result.Content,"293845736")
+                                        var xml = returntext(fromUser, toUser, '后期会增加更多功能');
+                                        //var xml = returnlink(fromUser,toUser,"测试aaa","描述AAA",result.Content,"293845736")
                                     }
                                     res.send(xml);
                                     break;
