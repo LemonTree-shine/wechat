@@ -104,8 +104,6 @@ server.post("/", function (req, res) {
                                     }).then(function (data) {
                                         request(`https://api.weixin.qq.com/cgi-bin/media/get?access_token=${global.wechat_access_token}&media_id=${JSON.parse(data).media_id}`, function (error, response, body) {
                                             console.log(11111111111111);
-                                            console.log(data);
-                                            console.log(typeof data);
                                             console.log(JSON.parse(data).media_id);
                                             console.log(body);
                                         })
