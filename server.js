@@ -93,7 +93,7 @@ server.post("/", function (req, res) {
                                     var xml = returntext(fromUser, toUser, '测试是图片类型');
                                     new Promise(function (resolve, reject) {
                                         var formData = {
-                                            media: fs.createReadStream(imgUrl),
+                                            media: fs.createReadStream(__dirname+'/1.png'),
                                         };
                                         request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}&type=image`, {
                                             formData: formData,
