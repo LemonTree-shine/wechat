@@ -92,6 +92,27 @@ server.post("/",function(req,res){
                                     var xml=returntext(fromUser,toUser,'测试是图片类型');
                                     res.send(xml);  
                                     break;
+                                case "voice":
+                                    var xml=returntext(fromUser,toUser,'测试是语音类型类型');
+                                    res.send(xml);  
+                                    break;
+                                case "video":
+                                    var xml=returntext(fromUser,toUser,'测试是视频类型类型');
+                                    res.send(xml);  
+                                    break;
+                                case "shortvideo":
+                                    var xml=returntext(fromUser,toUser,'测试是小视频类型类型');
+                                    res.send(xml);  
+                                    break;
+                                case "location":
+                                    var xml=returntext(fromUser,toUser,'测试是地理位置类型类型');
+                                    res.send(xml);  
+                                    break;
+                                case "link":
+                                    var xml=returntext(fromUser,toUser,'测试是链接类型类型');
+                                    res.send(xml);  
+                                    break;
+                                    
                                 default:
                                     var xml=returntext(fromUser,toUser,'回复的格式暂时不支持！');
                                     res.send(xml);  
