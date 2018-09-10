@@ -4,6 +4,7 @@ var request = require('request');
 var parseString = require('xml2js').parseString;
 
 var message = require('./util');
+const fs = require('fs');
 
 
 const server = express();
@@ -90,15 +91,31 @@ server.post("/", function (req, res) {
                                     break;
                                 case "image":
                                     var xml = returntext(fromUser, toUser, '测试是图片类型');
-                                    request(`https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=${global.wechat_access_token}`,{
-                                        "type":"image",
-                                        "offset":0,
-                                        "count":1
-                                    },function (error, response, body){
-                                        console.log(11111111111111);
-                                        console.log(body);
-                                        console.log(global.wechat_access_token)
-                                    })
+                                    new Promise(function(resolve,reject){
+                                        request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}`,{
+                                            formData: {
+                                                buffer: {
+                                                    value: fs.readFileSync(__dirname+"1.png"),
+                                                    options: {
+                                                      filename: '1.png',
+                                                      contentType: 'image/png'
+                                                    }
+                                                }
+                                            }
+                                        },(err, httpResponse, body)=>{
+                                            resolve(body);
+                                        });
+                                    }).then(function(data){
+                                        request(`https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=${global.wechat_access_token}`,{
+                                            "type":"image",
+                                            "offset":0,
+                                            "count":1
+                                        },function (error, response, body){
+                                            console.log(11111111111111);
+                                            console.log(body);
+                                            console.log(global.wechat_access_token)
+                                        })
+                                    });
                                     //returnimage()
                                     res.send(xml);
                                     break;
