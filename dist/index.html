@@ -40,6 +40,18 @@
                 },function(res){
 
                 });
+                wx.onMenuShareWeibo({
+                    title: 'asdasd', // 分享标题
+                    desc: 'asdasd', // 分享描述
+                    link: 'asdasd', // 分享链接
+                    imgUrl: 'asdasda', // 分享图标
+                    success: function () {
+                    // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                    }
+                });
             });
 
             document.querySelector("button").onclick = function(){
@@ -54,7 +66,7 @@
                     cancel: function () {
                     // 用户取消分享后执行的回调函数
                     }
-                    });
+                });
             };
         }
     });
