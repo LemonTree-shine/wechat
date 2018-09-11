@@ -21,10 +21,11 @@ var wechat_config = {};
 
 const server = express();
 server.use(function (req, res, next) {
+    console.log(req.header);
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Credentials', true);
+    //res.header('Access-Control-Allow-Credentials', true);
 
     var appid = "wx6e3bf6cb641b5d35";
     var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
