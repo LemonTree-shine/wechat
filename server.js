@@ -18,6 +18,8 @@ const fs = require('fs');
 
 var wechat_config = {};
 
+var messageData = {};
+
 
 const server = express();
 server.use(function (req, res, next) {
@@ -26,33 +28,36 @@ server.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     //res.header('Access-Control-Allow-Credentials', true);
-
-    var appid = "wx6e3bf6cb641b5d35";
-    var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
-    //获取token值
-    request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
-        global.wechat_access_token = JSON.parse(body).access_token;
-        console.log(222)
-        console.log(body);
-        if(!JSON.parse(body).access_token){
-            res.send(JSON.parse(body))
+    if(req.url==="/signture"){
+        var appid = "wx6e3bf6cb641b5d35";
+        var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+        //判断是否有access_token和jsapi_ticket
+        if(global.wechat_access_token&&global.jsapi_ticket){
+            next();
+            return false;
         }
-        // 获取jsapi_ticket
-        var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
-        request(ticketUrl, function (err, response, body) {
-            var data = JSON.parse(body);
-            if (data.errcode == 0) {
-                // 这里我缓存到了global
-                global.jsapi_ticket = data.ticket;
-                //console.log(global.wechat_access_token,global.jsapi_ticket);
-                // 计算signature
-                // ...
-                console.log(11111)
+        //获取token值
+        request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
+            global.wechat_access_token = JSON.parse(body).access_token;
+            if(!JSON.parse(body).access_token){
+                //res.send(JSON.parse(body))
+                messageData = JSON.parse(body);
                 next();
+                return false;
             }
+            // 获取jsapi_ticket
+            var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
+            request(ticketUrl, function (err, response, body) {
+                var data = JSON.parse(body);
+                if (data.errcode == 0) {
+                    global.jsapi_ticket = data.ticket;
+                    next();
+                }
+            })
         })
-    })
-    
+    }else{
+        next();
+    } 
 });
 
 server.get("/", function (req, res) {
@@ -185,22 +190,28 @@ server.post("/", function (req, res) {
 
 //签名签证
 server.use("/signture",function(req,res,next){
-    var accessToken = global.wechat_access_token;
-    var jsapiTicket = global.jsapi_ticket;
-    var nonceStr = Math.random().toString(36).substr(2, 15);
-    var timestamp = parseInt(new Date().getTime() / 1000) + '';
-    var url = req.headers.referer;
-    console.log(req.headers.referer);
-    //console.log(req);
+    if(global.wechat_access_token&&global.jsapi_ticket){
+        var accessToken = global.wechat_access_token;
+        var jsapiTicket = global.jsapi_ticket;
+        var nonceStr = Math.random().toString(36).substr(2, 15);
+        var timestamp = parseInt(new Date().getTime() / 1000) + '';
+        var url = req.headers.referer;
+        console.log(req.headers);
+        //console.log(req);
 
-    var string = `jsapi_ticket=${jsapiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
+        var string = `jsapi_ticket=${jsapiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
 
-    var signture = sha1(string);
-    res.send({
-        signture,
-        timestamp:timestamp,
-        nonceStr:nonceStr
-    });
+        var signture = sha1(string);
+        res.send({
+            signture,
+            timestamp:timestamp,
+            nonceStr:nonceStr
+        });
+    }else{
+        console.log(global.wechat_access_token,global.jsapi_ticket);
+        res.send(messageData);
+    }
+    
 });
 
 server.use(express.static(__dirname+'/dist'));
