@@ -31,7 +31,8 @@ server.use(function (req, res, next) {
     //获取token值
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
-        console.log(global.wechat_access_token);
+        console.log(222)
+        //console.log(global.wechat_access_token);
         // 获取jsapi_ticket
         var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
         request(ticketUrl, function (err, response, body) {
@@ -39,9 +40,10 @@ server.use(function (req, res, next) {
             if (data.errcode == 0) {
                 // 这里我缓存到了global
                 global.jsapi_ticket = data.ticket;
-                console.log(global.wechat_access_token,global.jsapi_ticket);
+                //console.log(global.wechat_access_token,global.jsapi_ticket);
                 // 计算signature
                 // ...
+                console.log(11111)
                 next();
             }
         })
@@ -183,8 +185,9 @@ server.use("/signture",function(req,res,next){
     var jsapiTicket = global.jsapi_ticket;
     var nonceStr = Math.random().toString(36).substr(2, 15);
     var timestamp = parseInt(new Date().getTime() / 1000) + '';
-    var url = req.url;
-    console.log(req.url);
+    var url = req.headers.referer;
+    console.log(req.headers.referer);
+    //console.log(req);
 
     var string = `jsapi_ticket=${jsapiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
 
