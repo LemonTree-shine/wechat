@@ -18,7 +18,10 @@ server.use(function (req, res, next) {
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
         // 获取jsapi_ticket
-        var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + body.access_token + '&type=jsapi';
+        var appid = "wx6e3bf6cb641b5d35";
+        var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+
+        var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
         request(ticket, function (err, response, body) {
             var data = JSON.parse(body);
             console.log(data);
@@ -61,8 +64,7 @@ server.get("/", function (req, res) {
 });
 
 server.post("/", function (req, res) {
-    var appid = "wx6e3bf6cb641b5d35";
-    var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+    
     try {
         var buffer = [];
         //监听 data 事件 用于接收数据
