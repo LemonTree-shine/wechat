@@ -183,8 +183,8 @@ server.use("/signture",function(req,res,next){
     var jsapiTicket = global.jsapi_ticket;
     var nonceStr = Math.random().toString(36).substr(2, 15);
     var timestamp = parseInt(new Date().getTime() / 1000) + '';
-    var url = res.url;
-    console.log(res.url);
+    var url = req.url;
+    console.log(req.url);
 
     var string = `jsapi_ticket=${jsapiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
 
