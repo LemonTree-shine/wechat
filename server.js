@@ -21,7 +21,7 @@ var wechat_config = {};
 
 const server = express();
 server.use(function (req, res, next) {
-    console.log(req.header);
+    console.log(req.headers);
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
@@ -33,7 +33,10 @@ server.use(function (req, res, next) {
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
         console.log(222)
-        //console.log(global.wechat_access_token);
+        console.log(body);
+        if(!JSON.parse(body).access_token){
+            res.send(JSON.parse(body))
+        }
         // 获取jsapi_ticket
         var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
         request(ticketUrl, function (err, response, body) {
