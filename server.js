@@ -14,13 +14,12 @@ server.use(function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Credentials', true);
 
+    var appid = "wx6e3bf6cb641b5d35";
+    var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
     //获取token值
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
         // 获取jsapi_ticket
-        var appid = "wx6e3bf6cb641b5d35";
-        var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
-
         var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
         request(ticket, function (err, response, body) {
             var data = JSON.parse(body);
