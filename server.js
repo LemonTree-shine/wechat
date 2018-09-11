@@ -28,36 +28,37 @@ server.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     //res.header('Access-Control-Allow-Credentials', true);
-    if(req.url==="/signture"){
-        var appid = "wx6e3bf6cb641b5d35";
-        var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
-        //判断是否有access_token和jsapi_ticket
-        if(global.wechat_access_token&&global.jsapi_ticket){
+
+
+    // var appid = "wx6e3bf6cb641b5d35";
+    // var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+    var appid = "wx4eb1112f459e56f2";
+    var secret = "1061898bbce171c81f3cbb3d54d27686";
+    
+    //判断是否有access_token和jsapi_ticket
+    if(global.wechat_access_token&&global.jsapi_ticket){
+        next();
+        return false;
+    }
+    //获取token值
+    request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
+        global.wechat_access_token = JSON.parse(body).access_token;
+        if(!JSON.parse(body).access_token){
+            //res.send(JSON.parse(body))
+            messageData = JSON.parse(body);
             next();
             return false;
         }
-        //获取token值
-        request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
-            global.wechat_access_token = JSON.parse(body).access_token;
-            if(!JSON.parse(body).access_token){
-                //res.send(JSON.parse(body))
-                messageData = JSON.parse(body);
+        // 获取jsapi_ticket
+        var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
+        request(ticketUrl, function (err, response, body) {
+            var data = JSON.parse(body);
+            if (data.errcode == 0) {
+                global.jsapi_ticket = data.ticket;
                 next();
-                return false;
             }
-            // 获取jsapi_ticket
-            var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
-            request(ticketUrl, function (err, response, body) {
-                var data = JSON.parse(body);
-                if (data.errcode == 0) {
-                    global.jsapi_ticket = data.ticket;
-                    next();
-                }
-            })
         })
-    }else{
-        next();
-    } 
+    })
 });
 
 server.get("/", function (req, res) {
