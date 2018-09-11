@@ -6,6 +6,16 @@ var parseString = require('xml2js').parseString;
 var message = require('./util');
 const fs = require('fs');
 
+var redis = require("redis"); 
+var client = redis.createClient(); 
+client.on("error", function (err) {  
+    console.log("Error :" , err);  
+  });  
+    
+  client.on('connect', function(){  
+    console.log('Redis连接成功.');  
+  }) 
+
 
 const server = express();
 server.use(function (req, res, next) {
@@ -24,7 +34,6 @@ server.use(function (req, res, next) {
         var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
         request(ticketUrl, function (err, response, body) {
             var data = JSON.parse(body);
-            console.log(data);
             if (data.errcode == 0) {
                 // 这里我缓存到了global
                 global.jsapi_ticket = data.ticket;
@@ -158,8 +167,6 @@ server.post("/", function (req, res) {
                                 res.send(xml);
                         }
                     }
-
-                    console.log(xml);
                 }
             })
         });
