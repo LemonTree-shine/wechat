@@ -19,9 +19,10 @@ server.use(function (req, res, next) {
     //获取token值
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
+        console.log(global.wechat_access_token);
         // 获取jsapi_ticket
         var ticketUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + global.wechat_access_token + '&type=jsapi';
-        request(ticket, function (err, response, body) {
+        request(ticketUrl, function (err, response, body) {
             var data = JSON.parse(body);
             console.log(data);
             if (data.errcode == 0) {
@@ -30,10 +31,11 @@ server.use(function (req, res, next) {
                 console.log(global.wechat_access_token,global.jsapi_ticket);
                 // 计算signature
                 // ...
+                next();
             }
         })
     })
-    next();
+    
 });
 
 server.get("/", function (req, res) {
