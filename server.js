@@ -6,15 +6,15 @@ var parseString = require('xml2js').parseString;
 var message = require('./util');
 const fs = require('fs');
 
-var redis = require("redis"); 
-var client = redis.createClient(); 
-client.on("error", function (err) {  
-    console.log("Error :" , err);  
-  });  
-    
-  client.on('connect', function(){  
-    console.log('Redis连接成功.');  
-  }) 
+// var redis = require("redis"); 
+// var client = redis.createClient(); 
+// client.on("error", function (err) {  
+// console.log("Error :" , err);  
+// });  
+
+// client.on('connect', function(){  
+// console.log('Redis连接成功.');  
+// }) 
 
 
 const server = express();
