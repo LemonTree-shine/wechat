@@ -16,6 +16,8 @@ const fs = require('fs');
 // console.log('Redis连接成功.');  
 // }) 
 
+var wechat_config = {};
+
 
 const server = express();
 server.use(function (req, res, next) {
@@ -173,9 +175,27 @@ server.post("/", function (req, res) {
     } catch (err) {
         console.log(error);
     }
-})
+});
 
-server.use(express.static(__dirname, ''));
+//签名签证
+server.use("/signture",function(req,res,next){
+    var accessToken = global.wechat_access_token;
+    var jsapiTicket = global.jsapi_ticket;
+    var nonceStr = Math.random().toString(36).substr(2, 15);
+    var timestamp = parseInt(new Date().getTime() / 1000) + '';
+    var url = "http://www.xiaogangji.com";
+
+    var string = `jsapi_ticket=${jsapiTicket}&noncestr=${nonceStr}&timestamp=${timestamp}&url=${url}`;
+
+    var signture = sha1(string);
+    res.send({
+        signture,
+        timestamp:timestamp,
+        nonceStr:nonceStr
+    });
+});
+
+server.use(express.static(__dirname+'/dist'));
 
 const app = server.listen("80", () => {
     console.log("启动了")

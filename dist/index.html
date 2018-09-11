@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+
+<body>
+    asdasdasd
+</body>
+<script>
+    $.ajax({
+        url: "http://www.xiaogangji.com/signture",
+        success: function (res) {
+            wx.config({
+                debug: true,
+                appId: 'wx6e3bf6cb641b5d35',
+                timestamp: res.timestamp,
+                nonceStr: res.nonceStr,
+                signature: res.signture,
+                jsApiList: [
+                    'checkJsApi',
+                    'onMenuShareTimeline',
+                    'onMenuShareAppMessage',
+                    'onMenuShareQQ',
+                    'updateTimelineShareData'
+                ]
+            });
+            wx.ready(function () {      //需在用户可能点击分享按钮前就先调用
+                debugger;
+                wx.updateTimelineShareData({
+                    title: 'a', // 分享标题
+                    link: 'http://www.xiaogangji.com', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                    imgUrl: 'asdasd', // 分享图标
+                }, function (res) {
+                    //这里是回调函数 
+                });
+            });
+        }
+    });
+</script>
+
+</html>
