@@ -36,7 +36,7 @@ server.use(function (req, res, next) {
     var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
 
     //判断access_token是否已经过期
-    if((new Date().getTime()-saveTokenTime)<7000000){
+    if((new Date().getTime()-saveTokenTime)<7160000){
         next();
         return false;
     }
@@ -128,12 +128,10 @@ server.post("/", function (req, res) {
                                     var xml = returntext(fromUser, toUser, message[result.Content]);
                                 } else {
                                     var xml = returntext(fromUser, toUser, '后期会增加更多功能');
-                                    //var xml = returnlink(fromUser,toUser,"测试aaa","描述AAA",result.Content,"293845736")
                                 }
                                 res.send(xml);
                                 break;
                             case "image":
-                                
                                 new Promise(function (resolve, reject) {
                                     var formData = {
                                         media: fs.createReadStream(__dirname+'/1.png'),
@@ -145,17 +143,10 @@ server.post("/", function (req, res) {
                                         resolve(body);
                                     });
                                 }).then(function (data) {
-                                    // request(`https://api.weixin.qq.com/cgi-bin/media/get?access_token=${global.wechat_access_token}&media_id=${JSON.parse(data).media_id}`, function (error, response, body) {
-                                    //     console.log(11111111111111);
-                                    //     console.log(JSON.parse(data).media_id);
-                                    // })
                                     var xml = returnimage(fromUser, toUser, JSON.parse(data).media_id);
-                                    console.log(11111111111111);
-                                    console.log(xml)
                                     res.send(xml);
                                     
                                 });
-                                //returnimage()
                                 break;
                             case "voice":
                                 var xml = returntext(fromUser, toUser, '测试是语音类型类型');
