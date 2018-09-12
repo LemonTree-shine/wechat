@@ -111,6 +111,8 @@ server.post("/", function (req, res) {
                                         "name": "今日歌曲",
                                         "key": "V1001_TODAY_MUSIC"
                                     }]
+                            },(err,response,body)=>{
+                                console.log(body)
                             })
                             res.send(xml);
                         }
