@@ -117,6 +117,7 @@ server.post("/", function (req, res) {
                             };
                             request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,JSON.parse(JSON.stringify(menu)),(err,response,body)=>{
                                 console.log(body)
+                                console.log(global.wechat_access_token);
                                 res.send(xml);
                             })
                             
