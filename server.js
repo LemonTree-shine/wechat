@@ -32,9 +32,9 @@ server.use(function (req, res, next) {
 
     // var appid = "wx6e3bf6cb641b5d35";
     // var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
-    var appid = "wx4eb1112f459e56f2";
-    var secret = "1061898bbce171c81f3cbb3d54d27686";
-    
+    var appid = "wx6e3bf6cb641b5d35";
+    var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+
     //判断是否有access_token和jsapi_ticket
     if(global.wechat_access_token&&global.jsapi_ticket){
         next();
@@ -58,7 +58,7 @@ server.use(function (req, res, next) {
                 next();
             }
         })
-    })
+    });
 });
 
 server.get("/", function (req, res) {
