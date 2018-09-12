@@ -26,7 +26,7 @@ server.use(function (req, res, next) {
     var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
 
     //判断access_token是否已经过期
-    if((new Date().getTime()-saveTokenTime)<7160000){
+    if ((new Date().getTime() - saveTokenTime) < 7160000) {
         next();
         return false;
     }
@@ -35,7 +35,7 @@ server.use(function (req, res, next) {
         global.wechat_access_token = JSON.parse(body).access_token;
         //设置毫秒数；
         saveTokenTime = new Date().getTime();
-        if(!JSON.parse(body).access_token){
+        if (!JSON.parse(body).access_token) {
             //res.send(JSON.parse(body))
             messageData = JSON.parse(body);
             next();
@@ -79,7 +79,36 @@ server.get("/", function (req, res) {
 
 });
 
-server.post("/", function (req, res) { 
+server.post("/", function (req, res) {
+    request.post(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`, {
+        "button": [
+            {
+                "type": "click",
+                "name": "今日歌曲",
+                "key": "V1001_TODAY_MUSIC"
+            },
+            {
+                "name": "菜单",
+                "sub_button": [
+                    {
+                        "type": "view",
+                        "name": "搜索",
+                        "url": "http://www.soso.com/"
+                    },
+                    {
+                        "type": "miniprogram",
+                        "name": "wxa",
+                        "url": "http://mp.weixin.qq.com",
+                        "appid": "wx286b93c14bbf93aa",
+                        "pagepath": "pages/lunar/index"
+                    },
+                    {
+                        "type": "click",
+                        "name": "赞一下我们",
+                        "key": "V1001_GOOD"
+                    }]
+            }]
+    })
     try {
         var buffer = [];
         //监听 data 事件 用于接收数据
@@ -123,7 +152,7 @@ server.post("/", function (req, res) {
                             case "image":
                                 new Promise(function (resolve, reject) {
                                     var formData = {
-                                        media: fs.createReadStream(__dirname+'/1.jpg'),
+                                        media: fs.createReadStream(__dirname + '/1.jpg'),
                                     };
                                     request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}&type=image`, {
                                         formData: formData,
@@ -134,7 +163,7 @@ server.post("/", function (req, res) {
                                 }).then(function (data) {
                                     var xml = returnimage(fromUser, toUser, JSON.parse(data).media_id);
                                     res.send(xml);
-                                    
+
                                 });
                                 break;
                             case "voice":
@@ -172,8 +201,8 @@ server.post("/", function (req, res) {
 });
 
 //签名签证
-server.use("/signture",function(req,res,next){
-    if(global.wechat_access_token&&global.jsapi_ticket){
+server.use("/signture", function (req, res, next) {
+    if (global.wechat_access_token && global.jsapi_ticket) {
         var accessToken = global.wechat_access_token;
         var jsapiTicket = global.jsapi_ticket;
         var nonceStr = Math.random().toString(36).substr(2, 15);
@@ -187,58 +216,58 @@ server.use("/signture",function(req,res,next){
         var signture = sha1(string);
         res.send({
             signture,
-            timestamp:timestamp,
-            nonceStr:nonceStr
+            timestamp: timestamp,
+            nonceStr: nonceStr
         });
-    }else{
-        console.log(global.wechat_access_token,global.jsapi_ticket);
+    } else {
+        console.log(global.wechat_access_token, global.jsapi_ticket);
         res.send(messageData);
     }
-    
+
 });
 
 //新增永久素材图片素材
-server.use("/addImages",function(req,res){
+server.use("/addImages", function (req, res) {
     var formData = {
-        media: fs.createReadStream(__dirname+'/1.jpg'),
+        media: fs.createReadStream(__dirname + '/1.jpg'),
     };
-    request.post("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token="+global.wechat_access_token+"&type=image",{
+    request.post("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=" + global.wechat_access_token + "&type=image", {
         formData: formData
-    },(error,response,body)=>{
+    }, (error, response, body) => {
         res.send(body);
     });
 });
 
 //获取永久素材列表
-server.use("/queryNewsList",function(req,res){
-    request.post("https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token="+global.wechat_access_token,{
-        "type":"image",
-        "offset":0,
-        "count":10
-    },(error,response,body)=>{
+server.use("/queryNewsList", function (req, res) {
+    request.post("https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token, {
+        "type": "image",
+        "offset": 0,
+        "count": 10
+    }, (error, response, body) => {
         res.send(body);
     });
 });
 
 //获取永久素材
-server.use("/queryNews",function(req,res){
-    request.post("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token="+global.wechat_access_token,{
-        media_id:"123123123"
-    },(error,response,body)=>{
+server.use("/queryNews", function (req, res) {
+    request.post("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=" + global.wechat_access_token, {
+        media_id: "123123123"
+    }, (error, response, body) => {
         res.send(body);
     });
 });
 
 
 //获取素材总数
-server.use("/allCount",function(req,res){
-    request.get("https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token="+global.wechat_access_token
-    ,(error,response,body)=>{
-        res.send(body);
-    })
+server.use("/allCount", function (req, res) {
+    request.get("https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=" + global.wechat_access_token
+        , (error, response, body) => {
+            res.send(body);
+        })
 });
 
-server.use(express.static(__dirname+'/dist'));
+server.use(express.static(__dirname + '/dist'));
 
 const app = server.listen("80", () => {
     console.log("启动了")
