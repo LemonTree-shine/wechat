@@ -116,8 +116,9 @@ server.post("/", function (req, res) {
                                     }]
                             },(err,response,body)=>{
                                 console.log(body)
+                                res.send(xml);
                             })
-                            res.send(xml);
+                            
                         }
                     } else {
                         /**
