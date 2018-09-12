@@ -104,34 +104,16 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
-                            request(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,{
-                                "button":[
-                                {    
-                                     "type":"click",
-                                     "name":"今日歌曲",
-                                     "key":"V1001_TODAY_MUSIC"
-                                 },
-                                 {
-                                      "name":"菜单",
-                                      "sub_button":[
-                                      {    
-                                          "type":"view",
-                                          "name":"搜索",
-                                          "url":"http://www.soso.com/"
-                                       },
-                                       {
-                                            "type":"miniprogram",
-                                            "name":"wxa",
-                                            "url":"http://mp.weixin.qq.com",
-                                            "appid":"wx286b93c14bbf93aa",
-                                            "pagepath":"pages/lunar/index"
-                                        },
-                                       {
-                                          "type":"click",
-                                          "name":"赞一下我们",
-                                          "key":"V1001_GOOD"
-                                       }]
-                                  }]
+                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,{
+                                "button": [{
+                                        "type": "click",
+                                        "name": "今日歌曲",
+                                        "key": "V1001_TODAY_MUSIC"
+                                    },{
+                                        "type": "click",
+                                        "name": "今日歌曲1",
+                                        "key": "V10011_TODAY_MUSIC"
+                                    }]
                             },(err,response,body)=>{
                                 console.log(body)
                             })
