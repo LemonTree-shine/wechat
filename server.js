@@ -104,7 +104,7 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
-                            request.post(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`, {
+                            request(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`, {
                                 "button": [
                                     {
                                         "type": "click",
