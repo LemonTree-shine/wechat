@@ -20,6 +20,9 @@ var wechat_config = {};
 
 var messageData = {};
 
+//存储token的时间
+var saveTokenTime = 0;
+
 
 const server = express();
 server.use(function (req, res, next) {
@@ -29,20 +32,19 @@ server.use(function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     //res.header('Access-Control-Allow-Credentials', true);
 
-
-    // var appid = "wx6e3bf6cb641b5d35";
-    // var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
     var appid = "wx6e3bf6cb641b5d35";
     var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
 
-    //判断是否有access_token和jsapi_ticket
-    if(global.wechat_access_token&&global.jsapi_ticket){
+    //判断access_token是否已经过期
+    if((new Date().getTime()-saveTokenTime)<7000000){
         next();
         return false;
     }
     //获取token值
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
+        //设置毫秒数；
+        saveTokenTime = new Date().getTime();
         if(!JSON.parse(body).access_token){
             //res.send(JSON.parse(body))
             messageData = JSON.parse(body);
