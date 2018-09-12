@@ -6,16 +6,6 @@ var parseString = require('xml2js').parseString;
 var message = require('./util');
 const fs = require('fs');
 
-// var redis = require("redis"); 
-// var client = redis.createClient(); 
-// client.on("error", function (err) {  
-// console.log("Error :" , err);  
-// });  
-
-// client.on('connect', function(){  
-// console.log('Redis连接成功.');  
-// }) 
-
 var wechat_config = {};
 
 var messageData = {};
@@ -26,7 +16,7 @@ var saveTokenTime = 0;
 
 const server = express();
 server.use(function (req, res, next) {
-    console.log(req.headers);
+    //console.log(req.headers);
     res.header('Access-Control-Allow-Origin', "*");
     res.header('Access-Control-Allow-Headers', 'Origin,Content-Type, Content-Length');
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
@@ -89,8 +79,7 @@ server.get("/", function (req, res) {
 
 });
 
-server.post("/", function (req, res) {
-    
+server.post("/", function (req, res) { 
     try {
         var buffer = [];
         //监听 data 事件 用于接收数据
@@ -114,7 +103,7 @@ server.post("/", function (req, res) {
                     if (result.Event) {
                         if (result.Event === 'subscribe') {
                             //回复消息
-                            var xml = returntext(fromUser, toUser, '欢迎关注公众号,hahhh');
+                            var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
                             res.send(xml);
                         }
                     } else {
@@ -127,7 +116,7 @@ server.post("/", function (req, res) {
                                 if (message[result.Content]) {
                                     var xml = returntext(fromUser, toUser, message[result.Content]);
                                 } else {
-                                    var xml = returntext(fromUser, toUser, '后期会增加更多功能');
+                                    var xml = returntext(fromUser, toUser, '官人不要着急哦，后期会上线新功能，尽情期待！');
                                 }
                                 res.send(xml);
                                 break;
@@ -206,6 +195,47 @@ server.use("/signture",function(req,res,next){
         res.send(messageData);
     }
     
+});
+
+//新增永久素材图片素材
+server.use("/addImages",function(req,res){
+    var formData = {
+        media: fs.createReadStream(__dirname+'/1.jpg'),
+    };
+    request.post("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token="+global.wechat_access_token+"&type=image",{
+        formData: formData
+    },(error,response,body)=>{
+        res.send(body);
+    });
+});
+
+//获取永久素材列表
+server.use("/queryNewsList",function(req,res){
+    request.post("https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token="+global.wechat_access_token,{
+        "type":"image",
+        "offset":0,
+        "count":10
+    },(error,response,body)=>{
+        res.send(body);
+    });
+});
+
+//获取永久素材
+server.use("/queryNews",function(req,res){
+    request.post("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token="+global.wechat_access_token,{
+        media_id:"123123123"
+    },(error,response,body)=>{
+        res.send(body);
+    });
+});
+
+
+//获取素材总数
+server.use("/allCount",function(req,res){
+    request.get("https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token="+global.wechat_access_token
+    ,(error,response,body)=>{
+        res.send(body);
+    })
 });
 
 server.use(express.static(__dirname+'/dist'));
