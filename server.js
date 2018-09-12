@@ -105,7 +105,7 @@ server.post("/", function (req, res) {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
                             var menu = {
-                                "button": [{
+                                "button":[{
                                         "type": "click",
                                         "name": "今日歌曲",
                                         "key": "V1001_TODAY_MUSIC"
@@ -115,7 +115,7 @@ server.post("/", function (req, res) {
                                         "key": "V10011_TODAY_MUSIC"
                                     }]
                             };
-                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,JSON.parse(menu),(err,response,body)=>{
+                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,JSON.parse(JSON.stringify(menu)),(err,response,body)=>{
                                 console.log(body)
                                 res.send(xml);
                             })
