@@ -80,15 +80,6 @@ server.get("/", function (req, res) {
 });
 
 server.post("/", function (req, res) {
-    console.log(global.wechat_access_token);
-    request.post(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`, {
-        "button": [
-            {
-                "type": "click",
-                "name": "今日歌曲",
-                "key": "V1001_TODAY_MUSIC"
-            }]
-    })
     try {
         var buffer = [];
         //监听 data 事件 用于接收数据
@@ -113,6 +104,14 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
+                            request.post(` https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`, {
+                                "button": [
+                                    {
+                                        "type": "click",
+                                        "name": "今日歌曲",
+                                        "key": "V1001_TODAY_MUSIC"
+                                    }]
+                            })
                             res.send(xml);
                         }
                     } else {
