@@ -134,7 +134,7 @@ server.post("/", function (req, res) {
                             case "image":
                                 new Promise(function (resolve, reject) {
                                     var formData = {
-                                        media: fs.createReadStream(__dirname+'/1.png'),
+                                        media: fs.createReadStream(__dirname+'/1.jpg'),
                                     };
                                     request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}&type=image`, {
                                         formData: formData,
