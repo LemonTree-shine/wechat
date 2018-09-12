@@ -115,7 +115,7 @@ server.post("/", function (req, res) {
                                         "key": "V10011_TODAY_MUSIC"
                                     }]
                             };
-                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,{body:JSON.parse(JSON.stringify(menu))},(err,response,body)=>{
+                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,{body:JSON.stringify(menu)},(err,response,body)=>{
                                 console.log(body)
                                 console.log(global.wechat_access_token);
                                 res.send(xml);
