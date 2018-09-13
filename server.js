@@ -112,7 +112,7 @@ server.post("/", function (req, res) {
                                       {
                                         "type": "view",
                                         "name": "授权登录",
-                                        "url": "http://wuyrsp3tma.proxy.qqbrowser.cc/auth"
+                                        "url": "http://www.xiaogangji.com/index.html"
                                       }]
                                   }]
                               };
