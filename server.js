@@ -105,22 +105,28 @@ server.post("/", function (req, res) {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
                             var menu = {
-                                "button":[{
-                                        "type": "click",
-                                        "name": "今日歌曲",
-                                        "key": "V1001_TODAY_MUSIC"
-                                    },{
-                                        "type": "click",
-                                        "name": "今日歌曲1",
-                                        "key": "V10011_TODAY_MUSIC"
-                                    }]
+                                "button": [{
+                                    "type": "click",
+                                    "name": "今日歌曲",
+                                    "key": "V1001_TODAY_MUSIC"
+                                }, {
+                                    "type": "click",
+                                    "name": "今日歌曲1",
+                                    "key": "V10011_TODAY_MUSIC"
+                                }]
                             };
-                            request(`https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,{"body":menu},(err,response,body)=>{
+                            request({
+                                url: `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,
+                                form: JSON.stringify(menu),
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            }, (err, response, body) => {
                                 console.log(body)
                                 console.log(global.wechat_access_token);
                                 res.send(xml);
                             })
-                            
+
                         }
                     } else {
                         /**
