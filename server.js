@@ -2,6 +2,8 @@ var express = require("express");
 var sha1 = require('sha1');
 var request = require('request');
 var parseString = require('xml2js').parseString;
+const bodyParser = require('body-parser');
+const mysql = require("mysql");
 
 var message = require('./util');
 const fs = require('fs');
@@ -13,8 +15,31 @@ var messageData = {};
 //存储token的时间
 var saveTokenTime = 0;
 
+var db = mysql.createPool({
+    host:"127.0.0.1",
+    user:"root",
+    password:"123456",
+    database:"wechat"
+});
+
 
 const server = express();
+
+/**
+ * 处理application/json
+*/
+server.use(bodyParser.json());
+
+/**
+ * 处理表单传过来的数据(application/x-www-form-urlencoded)
+*/
+server.use(bodyParser.urlencoded({ extended: true }));
+
+/**
+ * 处理text/plain
+*/
+server.use(bodyParser.text());
+
 server.use(function (req, res, next) {
     //console.log(req.headers);
     res.header('Access-Control-Allow-Origin', "*");
@@ -104,30 +129,7 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
-                            var menus = {
-                                "button": [
-                                  {
-                                    "name": "测试菜单",
-                                    "sub_button": [
-                                      {
-                                        "type": "view",
-                                        "name": "授权登录",
-                                        "url": "http://www.xiaogangji.com/index.html"
-                                      }]
-                                  }]
-                              };
-                            request.post({
-                                url: `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,
-                                form: JSON.stringify(menus),
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                }
-                            }, (err, response, body) => {
-                                console.log(body)
-                                console.log(global.wechat_access_token);
-                                res.send(xml);
-                            })
-
+                            res.send(xml);
                         }
                     } else {
                         /**
@@ -236,16 +238,16 @@ server.use("/addImages", function (req, res) {
 server.use("/queryNewsList", function (req, res) {
     console.log(global.wechat_access_token);
     request.post({
-        url:"https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
-        form:JSON.stringify({
-            type:"image",
+        url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
+        form: JSON.stringify({
+            type: "image",
             offset: 0,
             count: 10
         }),
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        
+
     }, (error, response, body) => {
         res.send(body);
     });
@@ -268,6 +270,34 @@ server.use("/allCount", function (req, res) {
             res.send(body);
         })
 });
+
+
+
+server.post("/setMenu", function (req, res) {
+    request.post({
+        url: `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,
+        form: req.body.menu,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, (err, response, body) => {
+        if(JSON.parse(body).errcode===0){
+            db.query(`UPDATE menu_db SET menu = '${req.body.menu}' WHERE id=1`)
+        }
+        res.send(body);
+    });
+});
+
+server.get("/getMenu",function(req,res){
+    db.query(`SELECT * FROM menu_db`,(err,data)=>{
+        var SearchData = JSON.parse(JSON.stringify(data));
+        if(err)
+            console.log(err);
+        else
+            res.send({menu:SearchData[0].menu});
+    })
+})
+
 
 server.use(express.static(__dirname + '/dist'));
 

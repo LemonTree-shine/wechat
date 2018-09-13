@@ -9,24 +9,63 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
 <body>
-    <button>test</button>
+    <textarea name="menu" id="" cols="150" rows="30"></textarea>
+    <div>
+        <button>配置微信菜单</button>
+    </div>
 </body>
 <script>
+    var url = "//localhost";
+    if(/www\.xiaogangji\.com/.test(window.location.origin)){
+        url = '//www.xiaogangji.com'
+    }
+    
+    document.querySelector("button").addEventListener("click",()=>{
+        $.ajax({
+            url:url+"/setMenu",
+            type:"post",
+            data:{menu:document.querySelector("textarea").value},
+            success:function(result){
+                var data = JSON.parse(result);
+                alert(data.errmsg);
+                // console.log(typeof data)
+            }
+        });
+    })
     $.ajax({
-        url:"http://www.xiaogangji.com/queryNewsList",
-        type:"post"
+        url:url+"/getMenu",
+        type:"get",
+        success:function(result){
+            // var data = JSON.parse(result);
+            // alert(data.errmsg);
+            console.log(result.menu)
+            document.querySelector("textarea").value = result.menu;
+        }
     });
-    $.ajax({
-        url:"http://www.xiaogangji.com/allCount",
-        type:"post"
-    });
+    //查询素材列表
+    // $.ajax({
+    //     url:"http://www.xiaogangji.com/queryNewsList",
+    //     type:"post"
+    // });
+
+
+    //查询素材总数
+    // $.ajax({
+    //     url:"http://www.xiaogangji.com/allCount",
+    //     type:"post"
+    // });
+
+
     // $.ajax({
     //     url:"http://localhost/addImages",
     //     type:"post"
     // });
-    $.ajax({
-        url:"http://www.xiaogangji.com/queryNews",
-        type:"post"
-    });
+
+
+    //查询素材
+    // $.ajax({
+    //     url:"http://www.xiaogangji.com/queryNews",
+    //     type:"post"
+    // });
 </script>
 </html>
