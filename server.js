@@ -104,20 +104,21 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
-                            var menu = {
-                                "button": [{
-                                    "type": "click",
-                                    "name": "今日歌曲",
-                                    "key": "V1001_TODAY_MUSIC"
-                                }, {
-                                    "type": "click",
-                                    "name": "今日歌曲1",
-                                    "key": "V10011_TODAY_MUSIC"
-                                }]
-                            };
-                            request({
+                            var menus = {
+                                "button": [
+                                  {
+                                    "name": "测试菜单",
+                                    "sub_button": [
+                                      {
+                                        "type": "view",
+                                        "name": "授权登录",
+                                        "url": "http://wuyrsp3tma.proxy.qqbrowser.cc/auth"
+                                      }]
+                                  }]
+                              };
+                            request.post({
                                 url: `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,
-                                form: JSON.stringify(menu),
+                                form: JSON.stringify(menus),
                                 headers: {
                                     'Content-Type': 'application/x-www-form-urlencoded'
                                 }
