@@ -234,10 +234,18 @@ server.use("/addImages", function (req, res) {
 
 //获取永久素材列表
 server.use("/queryNewsList", function (req, res) {
-    request.post("https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token, {
-        "type": "image",
-        "offset": 0,
-        "count": 10
+    console.log(global.wechat_access_token);
+    request.post({
+        url:"https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
+        form:JSON.stringify({
+            type:"image",
+            offset: 0,
+            count: 10
+        }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        
     }, (error, response, body) => {
         res.send(body);
     });
