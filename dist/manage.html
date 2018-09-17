@@ -12,6 +12,7 @@
     <textarea name="menu" id="" cols="150" rows="30"></textarea>
     <div>
         <button>配置微信菜单</button>
+        <div>群发消息</div>
     </div>
 </body>
 <script>
@@ -42,30 +43,17 @@
             document.querySelector("textarea").value = result.menu;
         }
     });
-    //查询素材列表
-    // $.ajax({
-    //     url:"http://www.xiaogangji.com/queryNewsList",
-    //     type:"post"
-    // });
-
-
-    //查询素材总数
-    // $.ajax({
-    //     url:"http://www.xiaogangji.com/allCount",
-    //     type:"post"
-    // });
-
-
-    // $.ajax({
-    //     url:"http://localhost/addImages",
-    //     type:"post"
-    // });
-
-
-    //查询素材
-    // $.ajax({
-    //     url:"http://www.xiaogangji.com/queryNews",
-    //     type:"post"
-    // });
+    //群发消息
+    document.querySelector("div").addEventListener("click",()=>{
+        $.ajax({
+            url:url+"/sendAll",
+            type:"post",
+            success:function(result){
+                var data = JSON.parse(result);
+                alert(data.errmsg);
+                // console.log(typeof data)
+            }
+        });
+    })
 </script>
 </html>

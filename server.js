@@ -129,6 +129,7 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
+                            db.query(`INSERT INTO uert_db (openid) VALUES (${fromUser})`)
                             res.send(xml);
                         }
                     } else {
@@ -271,8 +272,7 @@ server.use("/allCount", function (req, res) {
         })
 });
 
-
-
+//设置菜单
 server.post("/setMenu", function (req, res) {
     request.post({
         url: `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${global.wechat_access_token}`,
@@ -288,6 +288,7 @@ server.post("/setMenu", function (req, res) {
     });
 });
 
+//获取菜单
 server.get("/getMenu",function(req,res){
     db.query(`SELECT * FROM menu_db`,(err,data)=>{
         var SearchData = JSON.parse(JSON.stringify(data));
@@ -296,6 +297,27 @@ server.get("/getMenu",function(req,res){
         else
             res.send({menu:SearchData[0].menu});
     })
+})
+
+//群发消息
+server.post("/sendAll",function(req,res){
+    var data = {
+        "touser":[
+         "OPENID1",
+         "OPENID2"
+        ],
+         "msgtype": "text",
+         "text": { "content": "hello from boxer."}
+     }
+    request.post({
+        url: `https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=${global.wechat_access_token}`,
+        form: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    }, (err, response, body) => {
+        res.send(body);
+    });
 })
 
 
