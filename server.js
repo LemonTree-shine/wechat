@@ -129,7 +129,8 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
-                            db.query(`INSERT INTO uert_db (openid) VALUES (${fromUser})`)
+                            db.query(`INSERT INTO uert_db (openid) VALUES ('${fromUser}')`)
+                            console.log(fromUser);
                             res.send(xml);
                         }
                     } else {
