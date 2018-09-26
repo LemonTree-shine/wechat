@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>素材管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <link rel="stylesheet" href="./common.css">
+</head>
+<body>
+    <div class="upload-box c-space">
+        <div class="btn-upload">上传图片素材</div>
+        <input class="upload upload-input" accept="image/*" type="file" name="upload"/>
+    </div>
+    <button class="addNews btn c-space">上传图文素材</button>
+    <button class="getAllNews btn c-space">获取素材总数</button>
+    <button class="getAllNewsList btn c-space">获取素材</button>
+    <button class="tongbushuju btn c-space">同步图片素材到数据库</button>
+    <div style="margin-top:10px;">
+        <table class="c-table">
+            <thead>
+                <th>media_id</th>
+                <th>素材类型</th>
+                <th>链接url</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan=4 style="text-align: center">暂无数据</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+<script>
+    var url = "//localhost";
+    if(/www\.xiaogangji\.com/.test(window.location.origin)){
+        url = '//www.xiaogangji.com'
+    }
+
+    //获取素材总条数
+    document.querySelector(".getAllNews").onclick=function(){
+        $.ajax({
+            url:url+"/allCount",
+            type:"get",
+            success:function(result){
+                var data = JSON.parse(result);
+
+                if(data.errmsg){
+                    alert(data.errmsg);
+                }else{
+                    
+                }
+            }
+        });
+    }
+
+    //获取素材列表
+    document.querySelector(".getAllNewsList").onclick=function(){
+        $.ajax({
+            url:url+"/queryNewsList",
+            type:"get",
+            success:function(data){
+                var data = JSON.parse(data);
+                if(data.errcode!==0){
+                    alert(data.errmsg);
+                    return false;
+                }
+                var ohtml = "";
+                data.item.forEach(value=>{
+                    ohtml+=`<tr>
+                        <td>${value.media_id}</td>
+                        <td>${value.url?"<span style='color:blue'>图片类型[type_image]</span>":"<span style='color:red'>图文类型[type_news]</span>"}</td>
+                        <td>${value.url?`<a href=${value.url.split("?")[0]} target = '_blank'>跳转链接</a>`:""}</td>
+                    </tr>`;
+                });
+                document.querySelector(".c-table tbody").innerHTML = ohtml;
+            }
+        });
+    }
+
+
+    //上传图片素材
+    document.querySelector(".upload").onchange = function(){
+        console.log(this.files);
+        var formdata = new FormData();
+        formdata.append("upload", this.files[0]);
+        console.log(formdata);
+
+        var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("post",url+"/addImages",true);
+            xmlhttp.send(formdata);
+
+            xmlhttp.onreadystatechange=function(){
+                if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                    var result = JSON.parse(xmlhttp.response);
+                    console.log(result);
+                    if(result.media_id){
+                        alert("上传成功");
+                    }else{
+                        alert(result.errmsg);
+                    }
+                }
+            }
+    }
+
+    //上传图文素材
+    document.querySelector(".addNews").onclick = function(){
+        $.ajax({
+            url:url+"/addNews",
+            type:"get",
+            success:function(data){
+                console.log(data);
+            }
+        });
+    }
+
+    //同步数据
+    document.querySelector(".tongbushuju").onclick = function(){
+        $.ajax({
+            url:url+"/cogradient",
+            type:"get",
+            success:function(data){
+                console.log(data);
+            }
+        });
+    }    
+</script>
+</html>

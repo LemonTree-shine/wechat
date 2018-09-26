@@ -4,6 +4,8 @@ var request = require('request');
 var parseString = require('xml2js').parseString;
 const bodyParser = require('body-parser');
 const mysql = require("mysql");
+const multer = require("multer");
+const path = require("path");
 
 var message = require('./util');
 const fs = require('fs');
@@ -16,14 +18,22 @@ var messageData = {};
 var saveTokenTime = 0;
 
 var db = mysql.createPool({
-    host:"127.0.0.1",
-    user:"root",
-    password:"123456",
-    database:"wechat"
+    host: "127.0.0.1",
+    user: "root",
+    password: "123456",
+    database: "wechat"
 });
 
 
 const server = express();
+
+/**
+ * 处理上传文件
+*/
+var objMulter = multer({
+    dest: "./www/upload"
+});
+server.use(objMulter.any());
 
 /**
  * 处理application/json
@@ -47,8 +57,8 @@ server.use(function (req, res, next) {
     res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
     //res.header('Access-Control-Allow-Credentials', true);
 
-    var appid = "wx6e3bf6cb641b5d35";
-    var secret = "b9dff0e88a68b4a818d065d4ea8d5c35";
+    var appid = "wxd92576a07723a758";
+    var secret = "ebb5def30b8a7048bda573508b7c5bf8";
 
     //判断access_token是否已经过期
     if ((new Date().getTime() - saveTokenTime) < 7160000) {
@@ -58,6 +68,7 @@ server.use(function (req, res, next) {
     //获取token值
     request(`https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appid}&secret=${secret}`, function (error, response, body) {
         global.wechat_access_token = JSON.parse(body).access_token;
+        console.log(body);
         //设置毫秒数；
         saveTokenTime = new Date().getTime();
         if (!JSON.parse(body).access_token) {
@@ -226,19 +237,78 @@ server.use("/signture", function (req, res, next) {
 
 //新增永久素材图片素材
 server.use("/addImages", function (req, res) {
-    var formData = {
-        media: fs.createReadStream(__dirname + '/1.jpg'),
-    };
-    request.post("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=" + global.wechat_access_token + "&type=image", {
-        formData: formData
+
+    req.files.forEach((value, index) => {
+        var newPath = "www/upload/" + value.filename.substring(0, 5) + path.extname(value.originalname);
+        fs.rename(value.path, newPath, function (err) {
+            //res.send(newPath);
+            console.log(__dirname + '/' + newPath);
+            var formData = {
+                media: fs.createReadStream(__dirname + '/' + newPath),
+            };
+            request.post("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=" + global.wechat_access_token + "&type=image", {
+                formData: formData
+            }, (error, response, body) => {
+                var data = JSON.parse(body);
+                if (data.media_id) {
+                    console.log(data.media_id)
+                    console.log(data.url)
+                    db.query(`INSERT INTO news_db (media_id,url) VALUES ('${data.media_id}','${data.url}')`, (err, data) => {
+                        res.send(body);
+                    });
+                } else {
+                    res.send(body);
+                }
+            });
+        })
+    })
+
+});
+
+//新增永久素材图文素材
+server.use("/addNews", function (req, res) {
+    var data = {
+        "articles": [{
+            "title": "测试",
+            "thumb_media_id": "lmnEFbafgYZgMGa4rxX6luzhv3QNd9FGB7q9baJBT4U",
+            "author": "lemontree",
+            "digest": "图文消息的摘要，仅有单图文消息才有摘要，多图文此处为空。如果本字段为没有填写，则默认抓取正文前64个字",
+            "show_cover_pic": 1,
+            "content": "图文消息的具体内容，支持HTML标签，必须少于2万字符，小于1M，且此处会去除JS,涉及图片url必须来源接口获取。外部图片url将被过滤。",
+            "content_source_url": "/index.html"
+        }]
+    }
+    request.post({
+        url: "https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=" + global.wechat_access_token,
+        form: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
     }, (error, response, body) => {
-        res.send(body);
+        var data = JSON.parse(body);
+        if (data.media_id) {
+            console.log(data.media_id)
+            console.log(data.url)
+            db.query(`INSERT INTO news_db (media_id,url) VALUES ('${data.media_id}','')`, (err, data) => {
+                res.send(body);
+            });
+        } else {
+            res.send(body);
+        }
     });
 });
 
 //获取永久素材列表
 server.use("/queryNewsList", function (req, res) {
-    console.log(global.wechat_access_token);
+    //console.log(global.wechat_access_token);
+    db.query(`SELECT * FROM news_db`, (err, data) => {
+        var SearchData = JSON.parse(JSON.stringify(data));
+        if (err)
+            console.log(err);
+        else
+            res.send(JSON.stringify({ item: SearchData, errcode: 0 }));
+    });
+    return false;
     request.post({
         url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
         form: JSON.stringify({
@@ -282,7 +352,7 @@ server.post("/setMenu", function (req, res) {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }, (err, response, body) => {
-        if(JSON.parse(body).errcode===0){
+        if (JSON.parse(body).errcode === 0) {
             db.query(`UPDATE menu_db SET menu = '${req.body.menu}' WHERE id=1`)
         }
         res.send(body);
@@ -290,26 +360,51 @@ server.post("/setMenu", function (req, res) {
 });
 
 //获取菜单
-server.get("/getMenu",function(req,res){
-    db.query(`SELECT * FROM menu_db`,(err,data)=>{
+server.get("/getMenu", function (req, res) {
+    db.query(`SELECT * FROM menu_db`, (err, data) => {
         var SearchData = JSON.parse(JSON.stringify(data));
-        if(err)
+        if (err)
             console.log(err);
         else
-            res.send({menu:SearchData[0].menu});
+            res.send({ menu: SearchData[0].menu });
     })
 })
 
 //群发消息
-server.post("/sendAll",function(req,res){
+server.post("/sendAll", function (req, res) {
+    //发送文字格式
     var data = {
-        "touser":[
-         "OPENID1",
-         "OPENID2"
+        "touser": [
+            "olgG75gk_kxHRUrBSNqtD0jKLawY",
         ],
-         "msgtype": "text",
-         "text": { "content": "hello from boxer."}
-     }
+        "msgtype": "text",
+        "text": { "content": "你好，这是一个群发测试咯！不好意思，刚刚发错了！" }
+    }
+
+    //发送图文格式
+    // var data = {
+    //     "touser": [
+    //         "olgG75gk_kxHRUrBSNqtD0jKLawY",
+    //         "olgG75gk_kxHRUrBSNqtD0jKLawY"
+    //     ],
+    //     "mpnews":{
+    //         "media_id":"lmnEFbafgYZgMGa4rxX6lj6HmP5zVkCX2lNNsmxUWYM"
+    //      },
+    //       "msgtype":"mpnews",
+    //       "send_ignore_reprint":0
+    // }
+
+    //发送图片格式
+    // var data = {
+    //     "touser": [
+    //         "olgG75gk_kxHRUrBSNqtD0jKLawY",
+    //         "olgG75gk_kxHRUrBSNqtD0jKLawY"
+    //     ],
+    //     "image": {
+    //         "media_id": "lmnEFbafgYZgMGa4rxX6luzhv3QNd9FGB7q9baJBT4U"
+    //     },
+    //     "msgtype": "image"
+    // }
     request.post({
         url: `https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=${global.wechat_access_token}`,
         form: JSON.stringify(data),
@@ -317,6 +412,29 @@ server.post("/sendAll",function(req,res){
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     }, (err, response, body) => {
+        res.send(body);
+    });
+});
+
+//同步图片素材
+server.get("/cogradient",function(req,res){
+    request.post({
+        url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
+        form: JSON.stringify({
+            type: "image",
+            offset: 0,
+            count: 20
+        }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    }, (error, response, body) => {
+        var data = JSON.parse(body);
+        if(data.item){
+            data.item.forEach(value=>{
+                db.query(`INSERT INTO news_db (media_id,url) VALUES ('${value.media_id}','${value.url}')`);
+            });
+        }
         res.send(body);
     });
 })
