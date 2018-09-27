@@ -139,7 +139,7 @@ server.post("/", function (req, res) {
                     if (result.Event) {
                         if (result.Event === 'subscribe') {
                             //回复消息
-                            var xml = returntext(fromUser, toUser, '欢迎关注公众号!');
+                            var xml = returntext(fromUser, toUser, '欢迎关注千岛渔排!我们的地址是淳安县石林镇茶园村九龙源53号！电话号码:0571-64871090');
                             db.query(`INSERT INTO uert_db (openid) VALUES ('${fromUser}')`)
                             console.log(fromUser);
                             res.send(xml);
@@ -154,7 +154,7 @@ server.post("/", function (req, res) {
                                 if (message[result.Content]) {
                                     var xml = returntext(fromUser, toUser, message[result.Content]);
                                 } else {
-                                    var xml = returntext(fromUser, toUser, '官人不要着急哦，后期会上线新功能，尽情期待！');
+                                    var xml = returntext(fromUser, toUser, '欢迎关注千岛渔排，后期会上线很多新功能，尽情期待！');
                                 }
                                 res.send(xml);
                                 break;
