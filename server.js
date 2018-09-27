@@ -140,8 +140,6 @@ server.post("/", function (req, res) {
                         if (result.Event === 'subscribe') {
                             //回复消息
                             var xml = returntext(fromUser, toUser, '欢迎关注千岛渔排!我们的地址是淳安县石林镇茶园村九龙源53号！电话号码:0571-64871090');
-                            db.query(`INSERT INTO uert_db (openid) VALUES ('${fromUser}')`)
-                            console.log(fromUser);
                             res.send(xml);
                         }
                     } else {
@@ -250,15 +248,7 @@ server.use("/addImages", function (req, res) {
                 formData: formData
             }, (error, response, body) => {
                 var data = JSON.parse(body);
-                if (data.media_id) {
-                    console.log(data.media_id)
-                    console.log(data.url)
-                    db.query(`INSERT INTO news_db (media_id,url) VALUES ('${data.media_id}','${data.url}')`, (err, data) => {
-                        res.send(body);
-                    });
-                } else {
-                    res.send(body);
-                }
+                res.send(body);
             });
         })
     })
@@ -288,15 +278,7 @@ server.use("/addNews", function (req, res) {
         },
     }, (error, response, body) => {
         var data = JSON.parse(body);
-        if (data.media_id) {
-            console.log(data.media_id)
-            console.log(data.url)
-            db.query(`INSERT INTO news_db (media_id,url) VALUES ('${data.media_id}','')`, (err, data) => {
-                res.send(body);
-            });
-        } else {
-            res.send(body);
-        }
+        res.send(body);
     });
 });
 
