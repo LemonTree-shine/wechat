@@ -193,7 +193,6 @@ server.post("/", function (req, res) {
                                 var xml = returntext(fromUser, toUser, '测试是链接类型类型');
                                 res.send(xml);
                                 break;
-
                             default:
                                 var xml = returntext(fromUser, toUser, '回复的格式暂时不支持！');
                                 res.send(xml);
@@ -204,6 +203,8 @@ server.post("/", function (req, res) {
         });
     } catch (err) {
         console.log(error);
+        var xml = returntext(fromUser, toUser, '不好意思，系统出错啦！我们尽快处理');
+        res.send(xml);
     }
 });
 
@@ -266,8 +267,6 @@ server.use("/addNews", function (req, res) {
             "show_cover_pic": 1,
             "content": "图文消息的具体内容，支持HTML标签，必须少于2万字符，小于1M，且此处会去除JS,涉及图片url必须来源接口获取。外部图片url将被过滤。",
             "content_source_url": "http://www.xiaogangji.com/about.html",
-            // "need_open_comment":1,
-            // "only_fans_can_comment":0
         }]
     }
     request.post({
