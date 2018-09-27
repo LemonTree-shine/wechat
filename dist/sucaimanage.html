@@ -16,8 +16,7 @@
     </div>
     <button class="addNews btn c-space">上传图文素材</button>
     <button class="getAllNews btn c-space">获取素材总数</button>
-    <button class="getAllNewsList btn c-space">获取素材</button>
-    <button class="tongbushuju btn c-space">同步图片素材到数据库</button>
+    <button class="getAllNewsList btn c-space">获取素材列表</button>
     <div style="margin-top:10px;">
         <table class="c-table">
             <thead>
@@ -63,7 +62,7 @@
             type:"get",
             success:function(data){
                 var data = JSON.parse(data);
-                if(data.errcode!==0){
+                if(data.errcode&&data.errcode!==0){
                     alert(data.errmsg);
                     return false;
                 }
@@ -115,16 +114,5 @@
             }
         });
     }
-
-    //同步数据
-    document.querySelector(".tongbushuju").onclick = function(){
-        $.ajax({
-            url:url+"/cogradient",
-            type:"get",
-            success:function(data){
-                console.log(data);
-            }
-        });
-    }    
 </script>
 </html>

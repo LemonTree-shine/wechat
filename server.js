@@ -61,7 +61,7 @@ server.use(function (req, res, next) {
     var secret = "ebb5def30b8a7048bda573508b7c5bf8";
 
     //判断access_token是否已经过期
-    if ((new Date().getTime() - saveTokenTime) < 7160000) {
+    if ((new Date().getTime() - saveTokenTime) < 6000000) {
         next();
         return false;
     }
@@ -270,12 +270,14 @@ server.use("/addNews", function (req, res) {
     var data = {
         "articles": [{
             "title": "测试",
-            "thumb_media_id": "lmnEFbafgYZgMGa4rxX6luzhv3QNd9FGB7q9baJBT4U",
-            "author": "lemontree",
+            "thumb_media_id": "JiDLFOo7eak5N73bWE8YZr0PGf_txJxkGkxqNqXZLFA",
+            "author": "",
             "digest": "图文消息的摘要，仅有单图文消息才有摘要，多图文此处为空。如果本字段为没有填写，则默认抓取正文前64个字",
             "show_cover_pic": 1,
             "content": "图文消息的具体内容，支持HTML标签，必须少于2万字符，小于1M，且此处会去除JS,涉及图片url必须来源接口获取。外部图片url将被过滤。",
-            "content_source_url": "/index.html"
+            "content_source_url": "http://www.xiaogangji.com/about.html",
+            // "need_open_comment":1,
+            // "only_fans_can_comment":0
         }]
     }
     request.post({
@@ -300,19 +302,10 @@ server.use("/addNews", function (req, res) {
 
 //获取永久素材列表
 server.use("/queryNewsList", function (req, res) {
-    //console.log(global.wechat_access_token);
-    db.query(`SELECT * FROM news_db`, (err, data) => {
-        var SearchData = JSON.parse(JSON.stringify(data));
-        if (err)
-            console.log(err);
-        else
-            res.send(JSON.stringify({ item: SearchData, errcode: 0 }));
-    });
-    return false;
     request.post({
         url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
         form: JSON.stringify({
-            type: "image",
+            type: "news",
             offset: 0,
             count: 10
         }),
@@ -320,15 +313,6 @@ server.use("/queryNewsList", function (req, res) {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
 
-    }, (error, response, body) => {
-        res.send(body);
-    });
-});
-
-//获取永久素材
-server.use("/queryNews", function (req, res) {
-    request.post("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=" + global.wechat_access_token, {
-        media_id: "123123123"
     }, (error, response, body) => {
         res.send(body);
     });
@@ -373,26 +357,28 @@ server.get("/getMenu", function (req, res) {
 //群发消息
 server.post("/sendAll", function (req, res) {
     //发送文字格式
-    var data = {
-        "touser": [
-            "olgG75gk_kxHRUrBSNqtD0jKLawY",
-        ],
-        "msgtype": "text",
-        "text": { "content": "你好，这是一个群发测试咯！不好意思，刚刚发错了！" }
-    }
-
-    //发送图文格式
     // var data = {
     //     "touser": [
-    //         "olgG75gk_kxHRUrBSNqtD0jKLawY",
-    //         "olgG75gk_kxHRUrBSNqtD0jKLawY"
+    //         "oBOaL1diUyCuawBLjx24pMGRSfac",
+    //         "oBOaL1diUyCuawBLjx24pMGRSfac"
     //     ],
-    //     "mpnews":{
-    //         "media_id":"lmnEFbafgYZgMGa4rxX6lj6HmP5zVkCX2lNNsmxUWYM"
-    //      },
-    //       "msgtype":"mpnews",
-    //       "send_ignore_reprint":0
+    //     "msgtype": "text",
+    //     "text": { "content": "你好，这是一个群发测试咯！不好意思，刚刚发错了！" }
     // }
+
+    //发送图文格式
+    var data = {
+        "touser": [
+            "oBOaL1diUyCuawBLjx24pMGRSfac",
+            "oBOaL1diUyCuawBLjx24pMGRSfac"
+        ],
+        "mpnews":{
+            "media_id":"JiDLFOo7eak5N73bWE8YZvlLydwFnU1Gf488tP4h9bo"
+         },
+          "msgtype":"mpnews",
+          "clientmsgid":new Date().getTime(),
+          "send_ignore_reprint":0
+    }
 
     //发送图片格式
     // var data = {
@@ -401,7 +387,7 @@ server.post("/sendAll", function (req, res) {
     //         "olgG75gk_kxHRUrBSNqtD0jKLawY"
     //     ],
     //     "image": {
-    //         "media_id": "lmnEFbafgYZgMGa4rxX6luzhv3QNd9FGB7q9baJBT4U"
+    //         "media_id": "JiDLFOo7eak5N73bWE8YZr0PGf_txJxkGkxqNqXZLFA"
     //     },
     //     "msgtype": "image"
     // }
@@ -415,30 +401,6 @@ server.post("/sendAll", function (req, res) {
         res.send(body);
     });
 });
-
-//同步图片素材
-server.get("/cogradient",function(req,res){
-    request.post({
-        url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
-        form: JSON.stringify({
-            type: "image",
-            offset: 0,
-            count: 20
-        }),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-    }, (error, response, body) => {
-        var data = JSON.parse(body);
-        if(data.item){
-            data.item.forEach(value=>{
-                db.query(`INSERT INTO news_db (media_id,url) VALUES ('${value.media_id}','${value.url}')`);
-            });
-        }
-        res.send(body);
-    });
-})
-
 
 server.use(express.static(__dirname + '/dist'));
 

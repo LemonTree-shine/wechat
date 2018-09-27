@@ -44,16 +44,16 @@
         }
     });
     //群发消息
-    document.querySelector("div").addEventListener("click",()=>{
-        $.ajax({
-            url:url+"/sendAll",
-            type:"post",
-            success:function(result){
-                var data = JSON.parse(result);
-                alert(data.errmsg);
-                // console.log(typeof data)
-            }
-        });
-    })
+    // document.querySelector("div").addEventListener("click",()=>{
+    //     $.ajax({
+    //         url:url+"/sendAll",
+    //         type:"post",
+    //         success:function(result){
+    //             var data = JSON.parse(result);
+    //             alert(data.errmsg);
+    //             // console.log(typeof data)
+    //         }
+    //     });
+    // })
 </script>
 </html>
