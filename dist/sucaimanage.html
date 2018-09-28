@@ -17,6 +17,7 @@
     <button class="addNews btn c-space">上传图文素材</button>
     <button class="getAllNews btn c-space">获取素材总数</button>
     <button class="getAllNewsList btn c-space">获取素材列表</button>
+    <button class="openlist btn c-space">获取openid列表</button>
     <div style="margin-top:10px;">
         <table class="c-table">
             <thead>
@@ -113,6 +114,17 @@
                 console.log(data);
             }
         });
+    }
+
+    //获取openid列表
+    document.querySelector(".openlist").onclick = function(){
+        $.ajax({
+            url:url+"/openIdList",
+            type:"get",
+            success:function(data){
+                console.log(data);
+            }
+        })
     }
 </script>
 </html>

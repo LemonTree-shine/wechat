@@ -157,21 +157,8 @@ server.post("/", function (req, res) {
                                 res.send(xml);
                                 break;
                             case "image":
-                                new Promise(function (resolve, reject) {
-                                    var formData = {
-                                        media: fs.createReadStream(__dirname + '/1.jpg'),
-                                    };
-                                    request.post(`https://api.weixin.qq.com/cgi-bin/media/upload?access_token=${global.wechat_access_token}&type=image`, {
-                                        formData: formData,
-                                    }, (err, httpResponse, body) => {
-                                        console.log(body)
-                                        resolve(body);
-                                    });
-                                }).then(function (data) {
-                                    var xml = returnimage(fromUser, toUser, JSON.parse(data).media_id);
-                                    res.send(xml);
-
-                                });
+                                var xml = returnimage(fromUser, toUser, "JiDLFOo7eak5N73bWE8YZhsm242H87c84SlLu9xuNbs");
+                                res.send(xml);
                                 break;
                             case "voice":
                                 var xml = returntext(fromUser, toUser, '测试是语音类型类型');
@@ -286,7 +273,7 @@ server.use("/queryNewsList", function (req, res) {
     request.post({
         url: "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=" + global.wechat_access_token,
         form: JSON.stringify({
-            type: "news",
+            type: "image",
             offset: 0,
             count: 10
         }),
@@ -383,6 +370,14 @@ server.post("/sendAll", function (req, res) {
     });
 });
 
+//获取openid列表
+server.get("/openIdList", function (req, res) {
+    request.get("https://api.weixin.qq.com/cgi-bin/user/get?access_token=" + global.wechat_access_token,(error, response, body) => {
+        res.send(body);
+    })
+})
+
+
 server.use(express.static(__dirname + '/dist'));
 
 const app = server.listen("80", () => {
@@ -401,6 +396,7 @@ function returntext(toUser, fromUser, content) {
     return xmlContent;
 }
 
+//回复图片消息
 function returnimage(toUser, fromUser, mediaId) {
     var xmlContent = `<xml>
                         <ToUserName><![CDATA[${toUser}]]></ToUserName>
@@ -412,3 +408,5 @@ function returnimage(toUser, fromUser, mediaId) {
 
     return xmlContent;
 }
+
+
